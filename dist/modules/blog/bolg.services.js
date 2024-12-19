@@ -13,9 +13,11 @@ exports.blogServices = void 0;
 const blog_model_1 = require("./blog.model");
 // getAllBlog from Db
 const getBlogsFromDb = () => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield blog_model_1.Blog.find().select('-_id title content').populate({
+    const result = yield blog_model_1.Blog.find()
+        .select('-isPublished -createdAt -updatedAt -__v')
+        .populate({
         path: 'author',
-        select: '-_id name',
+        select: '-password -__v',
     });
     return result;
 });
@@ -25,7 +27,7 @@ const createBlogIntoDB = (payload, id) => __awaiter(void 0, void 0, void 0, func
     const result = yield blog_model_1.Blog.create(payload);
     yield result.populate({
         path: 'author',
-        select: 'name email',
+        select: ' -password',
     });
     return result;
 });

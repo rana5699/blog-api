@@ -34,3 +34,14 @@ export const handleMongooseCastError = (err: any) => ({
   message: `Invalid ${err.path}: ${err.value}`,
   error: `Expected a valid ${err.path}, but received: ${err.value}`,
 });
+
+/// Handle duplicate errors (e.g., invalid ObjectId)
+export const handleDuplicateError = (err: any) => {
+  const field = Object.keys(err.keyValue)[0];
+  const value = err.keyValue[field];
+  return {
+    statusCode: StatusCodes.CONFLICT, // HTTP 409 Conflict
+    message: 'Duplicate Key Error',
+    error: `The value "${value}" for the field "${field}" already exists. Please provide a unique value.`,
+  };
+};

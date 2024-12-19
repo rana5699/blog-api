@@ -82,12 +82,18 @@ const createBlog = cacthAsync(async (req, res, next) => {
     }
 
     // if is okay
-    responseHandelar(res, StatusCodes.OK, true, 'Blog created successfully', {
-      _id: savedBlogData?._id,
-      title: savedBlogData.title,
-      content: savedBlogData?.content,
-      author: savedBlogData.author,
-    });
+    responseHandelar(
+      res,
+      StatusCodes.CREATED,
+      true,
+      'Blog created successfully',
+      {
+        _id: savedBlogData?._id,
+        title: savedBlogData.title,
+        content: savedBlogData?.content,
+        author: savedBlogData.author,
+      },
+    );
   } catch (error) {
     next(error);
   }
@@ -212,12 +218,7 @@ const deleteBlog = cacthAsync(async (req, res, next) => {
     // find blog
     const blog = await blogServices.getBlogByIdFromDb(id);
 
-    // check user is author of this blog
-    Blog.authorizedUser(blog, refaranceId, res);
-
-    const isDeleted = await blogServices.deleteBlogFromDB(id);
-
-    if (!isDeleted) {
+    if (!blog) {
       responseHandelar(
         res,
         StatusCodes.NOT_FOUND,
@@ -226,6 +227,11 @@ const deleteBlog = cacthAsync(async (req, res, next) => {
         null,
       );
     }
+
+    // check user is author of this blog
+    Blog.authorizedUser(blog, refaranceId, res);
+
+    await blogServices.deleteBlogFromDB(id);
 
     // check is authorized user
 

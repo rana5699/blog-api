@@ -55,7 +55,7 @@ const createBlog = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 
             (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.BAD_REQUEST, false, 'Blog creation faield', null);
         }
         // if is okay
-        (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.OK, true, 'Blog created successfully', {
+        (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.CREATED, true, 'Blog created successfully', {
             _id: savedBlogData === null || savedBlogData === void 0 ? void 0 : savedBlogData._id,
             title: savedBlogData.title,
             content: savedBlogData === null || savedBlogData === void 0 ? void 0 : savedBlogData.content,
@@ -129,12 +129,12 @@ const deleteBlog = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 
         }
         // find blog
         const blog = yield bolg_services_1.blogServices.getBlogByIdFromDb(id);
-        // check user is author of this blog
-        blog_model_1.Blog.authorizedUser(blog, refaranceId, res);
-        const isDeleted = yield bolg_services_1.blogServices.deleteBlogFromDB(id);
-        if (!isDeleted) {
+        if (!blog) {
             (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.NOT_FOUND, false, 'Blog not found!', null);
         }
+        // check user is author of this blog
+        blog_model_1.Blog.authorizedUser(blog, refaranceId, res);
+        yield bolg_services_1.blogServices.deleteBlogFromDB(id);
         // check is authorized user
         res.status(http_status_codes_1.StatusCodes.OK).json({
             success: true,

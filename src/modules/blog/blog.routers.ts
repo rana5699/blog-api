@@ -24,7 +24,7 @@ blogRoutes.post(
 // update blog
 blogRoutes.patch(
   '/blogs/:id',
-  auth(),
+  auth(user_role.user),
   validateRequest(blogUpdateValidationSchema),
   blogControllers.updateBlog,
 );

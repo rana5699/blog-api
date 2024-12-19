@@ -4,10 +4,12 @@ import { TBlog } from './bolg.interface';
 
 // getAllBlog from Db
 const getBlogsFromDb = async () => {
-  const result = await Blog.find().select('-_id title content').populate({
-    path: 'author',
-    select: '-_id name',
-  });
+  const result = await Blog.find()
+    .select('-isPublished -createdAt -updatedAt -__v')
+    .populate({
+      path: 'author',
+      select: '-password -__v',
+    });
 
   return result;
 };
@@ -19,7 +21,7 @@ const createBlogIntoDB = async (payload: TBlog, id: Types.ObjectId) => {
 
   await result.populate({
     path: 'author',
-    select: 'name email',
+    select: ' -password',
   });
 
   return result;

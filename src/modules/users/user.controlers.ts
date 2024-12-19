@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { StatusCodes } from "http-status-codes";
-import responseHandelar from "../../utilities/resposeHandelar";
-import { userServices } from "./user.services";
-import cacthAsync from "../../utilities/catchAsync";
+import { StatusCodes } from 'http-status-codes';
+import responseHandelar from '../../utilities/resposeHandelar';
+import { userServices } from './user.services';
+import cacthAsync from '../../utilities/catchAsync';
 
 // createUser
 const createUser = cacthAsync(async (req, res, next) => {
@@ -10,21 +10,21 @@ const createUser = cacthAsync(async (req, res, next) => {
     const userData = req.body;
 
     if (!userData) {
-      res.send("must provided user data");
+      res.send('must provided user data');
     }
 
     const saveduserData = await userServices.createUserIntoDB(userData);
 
     responseHandelar(
       res,
-      StatusCodes.OK,
+      StatusCodes.CREATED,
       true,
-      "User registered successfully",
+      'User registered successfully',
       {
         _id: saveduserData?._id,
         name: saveduserData?.name,
         email: saveduserData?.email,
-      }
+      },
     );
   } catch (err: any) {
     next(err);

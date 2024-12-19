@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.handleMongooseCastError = exports.handleMongooseValidationError = exports.handleZodValidationError = void 0;
+exports.handleDuplicateError = exports.handleMongooseCastError = exports.handleMongooseValidationError = exports.handleZodValidationError = void 0;
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const http_status_codes_1 = require("http-status-codes");
 // handle zod  validation eror
@@ -34,3 +34,14 @@ const handleMongooseCastError = (err) => ({
     error: `Expected a valid ${err.path}, but received: ${err.value}`,
 });
 exports.handleMongooseCastError = handleMongooseCastError;
+/// Handle duplicate errors (e.g., invalid ObjectId)
+const handleDuplicateError = (err) => {
+    const field = Object.keys(err.keyValue)[0];
+    const value = err.keyValue[field];
+    return {
+        statusCode: http_status_codes_1.StatusCodes.CONFLICT, // HTTP 409 Conflict
+        message: 'Duplicate Key Error',
+        error: `The value "${value}" for the field "${field}" already exists. Please provide a unique value.`,
+    };
+};
+exports.handleDuplicateError = handleDuplicateError;

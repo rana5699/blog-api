@@ -15,7 +15,7 @@ blogRoutes.get('/blogs', blog_controlers_1.blogControllers.getBlogs);
 // post blog
 blogRoutes.post('/blogs', (0, auth_1.default)(user_constant_1.user_role.admin, user_constant_1.user_role.user), (0, validateRequest_1.default)(blog_validation_1.blogValidationSchema), blog_controlers_1.blogControllers.createBlog);
 // update blog
-blogRoutes.patch('/blogs/:id', (0, auth_1.default)(), (0, validateRequest_1.default)(blog_validation_1.blogUpdateValidationSchema), blog_controlers_1.blogControllers.updateBlog);
+blogRoutes.patch('/blogs/:id', (0, auth_1.default)(user_constant_1.user_role.user), (0, validateRequest_1.default)(blog_validation_1.blogUpdateValidationSchema), blog_controlers_1.blogControllers.updateBlog);
 // delete blog
 blogRoutes.delete('/blogs/:id', (0, auth_1.default)(user_constant_1.user_role.user), blog_controlers_1.blogControllers.deleteBlog);
 exports.default = blogRoutes;

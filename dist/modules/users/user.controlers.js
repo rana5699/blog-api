@@ -23,10 +23,10 @@ const createUser = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 
     try {
         const userData = req.body;
         if (!userData) {
-            res.send("must provided user data");
+            res.send('must provided user data');
         }
         const saveduserData = yield user_services_1.userServices.createUserIntoDB(userData);
-        (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.OK, true, "User registered successfully", {
+        (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.CREATED, true, 'User registered successfully', {
             _id: saveduserData === null || saveduserData === void 0 ? void 0 : saveduserData._id,
             name: saveduserData === null || saveduserData === void 0 ? void 0 : saveduserData.name,
             email: saveduserData === null || saveduserData === void 0 ? void 0 : saveduserData.email,
