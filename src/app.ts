@@ -7,6 +7,7 @@ import notFound from './utilities/notFound';
 import userRoutes from './modules/users/user.routers';
 import blogRoutes from './modules/blog/blog.routers';
 import authRouter from './modules/auth/auth.routerts';
+import adminRouter from './modules/admin/admin.routers';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use('/api', userRoutes);
 app.use('/api', blogRoutes);
 app.use('/api', authRouter);
+app.use('/api', adminRouter);
 
 // check server response
 app.get('/', (req, res) => {

@@ -6,6 +6,7 @@ import {
   blogValidationSchema,
 } from './blog.validation';
 import auth from '../../utilities/auth';
+import { user_role } from '../users/user.constant';
 
 const blogRoutes = Router();
 
@@ -15,7 +16,7 @@ blogRoutes.get('/blogs', blogControllers.getBlogs);
 // post blog
 blogRoutes.post(
   '/blogs',
-  auth(),
+  auth(user_role.admin, user_role.user),
   validateRequest(blogValidationSchema),
   blogControllers.createBlog,
 );
@@ -29,6 +30,10 @@ blogRoutes.patch(
 );
 
 // delete blog
-blogRoutes.delete('/blogs/:id', auth(), blogControllers.deleteBlog);
+blogRoutes.delete(
+  '/blogs/:id',
+  auth(user_role.user),
+  blogControllers.deleteBlog,
+);
 
 export default blogRoutes;

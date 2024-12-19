@@ -16,7 +16,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const app_error_1 = __importDefault(require("../errors/app.error"));
 const http_status_codes_1 = require("http-status-codes");
 const config_1 = __importDefault(require("../config/config"));
-const auth = () => {
+const auth = (...userRole) => {
     return (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         const token = req.headers.authorization;
         if (!token) {
@@ -25,6 +25,11 @@ const auth = () => {
         // Verify token
         jsonwebtoken_1.default.verify(token, `${config_1.default.jwt_access_token}`, (err, decoded) => {
             if (err) {
+                return next(new app_error_1.default(http_status_codes_1.StatusCodes.UNAUTHORIZED, 'You are UNAUTHORIZED', ''));
+            }
+            const role = decoded.role;
+            // check user role
+            if (userRole && !userRole.includes(role)) {
                 return next(new app_error_1.default(http_status_codes_1.StatusCodes.UNAUTHORIZED, 'You are UNAUTHORIZED', ''));
             }
             req.user = decoded;
