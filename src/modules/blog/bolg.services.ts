@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { Blog } from './blog.model';
 import { TBlog } from './bolg.interface';
 
@@ -12,7 +13,8 @@ const getBlogsFromDb = async () => {
 };
 
 // createBlogIntoDB
-const createBlogIntoDB = async (payload: TBlog) => {
+const createBlogIntoDB = async (payload: TBlog, id: Types.ObjectId) => {
+  payload.author = id;
   const result = await Blog.create(payload);
 
   await result.populate({
@@ -20,6 +22,12 @@ const createBlogIntoDB = async (payload: TBlog) => {
     select: 'name email',
   });
 
+  return result;
+};
+
+// getBlogByIdFromDb
+const getBlogByIdFromDb = async (id: string) => {
+  const result = await Blog.findById(id);
   return result;
 };
 
@@ -48,6 +56,7 @@ const deleteBlogFromDB = async (id: string) => {
 export const blogServices = {
   getBlogsFromDb,
   createBlogIntoDB,
+  getBlogByIdFromDb,
   updateBlogFromDB,
   deleteBlogFromDB,
 };

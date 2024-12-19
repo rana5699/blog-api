@@ -28,7 +28,7 @@ blogRoutes.patch(
   blogControllers.updateBlog,
 );
 
-// update blog
+// delete blog
 blogRoutes.delete('/blogs/:id', auth(), blogControllers.deleteBlog);
 
 export default blogRoutes;

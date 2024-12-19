@@ -1,5 +1,5 @@
-import { Schema, model } from "mongoose";
-import { TBlog } from "./bolg.interface";
+import { Schema, model } from 'mongoose';
+import { TBlog } from './bolg.interface';
 
 const blogSchema = new Schema<TBlog>(
   {
@@ -15,16 +15,15 @@ const blogSchema = new Schema<TBlog>(
     },
     author: {
       type: Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+      ref: 'User',
     },
     isPublished: {
       type: Boolean,
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Export Blog model
-export const Blog = model<TBlog>("Blog", blogSchema);
+export const Blog = model<TBlog>('Blog', blogSchema);

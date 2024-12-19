@@ -24,7 +24,7 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     });
     // check isUserExists
     if (!isUserExists) {
-        throw new Error("User not found !!");
+        throw new Error('User not found !!');
     }
     // check is User isBlocked
     if (isUserExists.isBlocked) {
@@ -33,16 +33,17 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     //   now check valid password
     const isPasswordCorrect = yield bcrypt_1.default.compare(payload.password, isUserExists.password);
     if (!isPasswordCorrect) {
-        throw new Error("Incorrect password");
+        throw new Error('Incorrect password');
     }
     //   jwt payload
     const jwtPayload = {
+        userId: isUserExists === null || isUserExists === void 0 ? void 0 : isUserExists._id,
         userEmail: isUserExists === null || isUserExists === void 0 ? void 0 : isUserExists.email,
         role: isUserExists === null || isUserExists === void 0 ? void 0 : isUserExists.role,
     };
     //   create JWT
     const token = jsonwebtoken_1.default.sign(jwtPayload, `${config_1.default.jwt_access_token}`, {
-        expiresIn: "10d",
+        expiresIn: '10d',
     });
     // If email and password are correct
     return { isUserExists, token };

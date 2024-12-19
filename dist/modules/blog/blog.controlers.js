@@ -17,6 +17,7 @@ const http_status_codes_1 = require("http-status-codes");
 const catchAsync_1 = __importDefault(require("../../utilities/catchAsync"));
 const resposeHandelar_1 = __importDefault(require("../../utilities/resposeHandelar"));
 const bolg_services_1 = require("./bolg.services");
+const user_model_1 = require("../users/user.model");
 // Blogs
 const getBlogs = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -29,9 +30,25 @@ const getBlogs = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0,
 }));
 // createBlog
 const createBlog = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const referanceId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
     try {
+        // user is logged in
+        if (!referanceId) {
+            (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.UNAUTHORIZED, false, 'User is not authenticated!', null);
+        }
+        // Check if the user is blocked
+        const loginUser = yield user_model_1.User.findById(referanceId);
+        // check user exists
+        if (!loginUser) {
+            (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.NOT_FOUND, false, 'Author not found !', null);
+        }
+        if (loginUser === null || loginUser === void 0 ? void 0 : loginUser.isBlocked) {
+            (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.FORBIDDEN, false, 'User is blocked and cannot create blogs!', null);
+        }
         const blogData = req.body;
-        const savedBlogData = yield bolg_services_1.blogServices.createBlogIntoDB(blogData);
+        const savedBlogData = yield bolg_services_1.blogServices.createBlogIntoDB(blogData, referanceId);
+        // check use is blocek
         // Check if blog  saved unsuccessfully
         if (!savedBlogData) {
             (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.BAD_REQUEST, false, 'Blog creation faield', null);
@@ -50,13 +67,24 @@ const createBlog = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 
 }));
 // updateBlog
 const updateBlog = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const { id } = req.params;
-    const updateData = req.body;
+    const refaranceId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
     // Check if ID is provided
     if (!id) {
         (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.BAD_REQUEST, false, 'Blog ID is required!', null);
     }
     try {
+        // check blog isBlogExsits
+        const isBlogExsits = yield bolg_services_1.blogServices.getBlogByIdFromDb(id);
+        if (!isBlogExsits) {
+            (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.NOT_FOUND, false, 'BLOG NOT FOUND !', null);
+        }
+        // check user is authorized to update this blog
+        if ((isBlogExsits === null || isBlogExsits === void 0 ? void 0 : isBlogExsits.author.toString()) !== refaranceId) {
+            (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.FORBIDDEN, false, 'You are not authorized to update this blog!', null);
+        }
+        const updateData = req.body;
         // Update blog in the database
         const updatedBlog = yield bolg_services_1.blogServices.updateBlogFromDB(updateData, id);
         // Check if update was not successful

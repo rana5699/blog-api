@@ -20,12 +20,18 @@ const getBlogsFromDb = () => __awaiter(void 0, void 0, void 0, function* () {
     return result;
 });
 // createBlogIntoDB
-const createBlogIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+const createBlogIntoDB = (payload, id) => __awaiter(void 0, void 0, void 0, function* () {
+    payload.author = id;
     const result = yield blog_model_1.Blog.create(payload);
     yield result.populate({
         path: 'author',
         select: 'name email',
     });
+    return result;
+});
+// getBlogByIdFromDb
+const getBlogByIdFromDb = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield blog_model_1.Blog.findById(id);
     return result;
 });
 // updateBlogFromDB
@@ -48,6 +54,7 @@ const deleteBlogFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () 
 exports.blogServices = {
     getBlogsFromDb,
     createBlogIntoDB,
+    getBlogByIdFromDb,
     updateBlogFromDB,
     deleteBlogFromDB,
 };

@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import cacthAsync from '../../utilities/catchAsync';
 import responseHandelar from '../../utilities/resposeHandelar';
 import { blogServices } from './bolg.services';
+import { User } from '../users/user.model';
 
 // Blogs
 const getBlogs = cacthAsync(async (req, res, next) => {
@@ -22,10 +23,51 @@ const getBlogs = cacthAsync(async (req, res, next) => {
 
 // createBlog
 const createBlog = cacthAsync(async (req, res, next) => {
+  const referanceId = req.user?.userId;
   try {
+    // user is logged in
+    if (!referanceId) {
+      responseHandelar(
+        res,
+        StatusCodes.UNAUTHORIZED,
+        false,
+        'User is not authenticated!',
+        null,
+      );
+    }
+
+    // Check if the user is blocked
+    const loginUser = await User.findById(referanceId);
+
+    // check user exists
+    if (!loginUser) {
+      responseHandelar(
+        res,
+        StatusCodes.NOT_FOUND,
+        false,
+        'Author not found !',
+        null,
+      );
+    }
+
+    if (loginUser?.isBlocked) {
+      responseHandelar(
+        res,
+        StatusCodes.FORBIDDEN,
+        false,
+        'User is blocked and cannot create blogs!',
+        null,
+      );
+    }
+
     const blogData = req.body;
 
-    const savedBlogData = await blogServices.createBlogIntoDB(blogData);
+    const savedBlogData = await blogServices.createBlogIntoDB(
+      blogData,
+      referanceId,
+    );
+
+    // check use is blocek
 
     // Check if blog  saved unsuccessfully
     if (!savedBlogData) {
@@ -53,7 +95,7 @@ const createBlog = cacthAsync(async (req, res, next) => {
 // updateBlog
 const updateBlog = cacthAsync(async (req, res, next) => {
   const { id } = req.params;
-  const updateData = req.body;
+  const refaranceId = req.user?.userId;
 
   // Check if ID is provided
   if (!id) {
@@ -67,6 +109,31 @@ const updateBlog = cacthAsync(async (req, res, next) => {
   }
 
   try {
+    // check blog isBlogExsits
+    const isBlogExsits = await blogServices.getBlogByIdFromDb(id);
+
+    if (!isBlogExsits) {
+      responseHandelar(
+        res,
+        StatusCodes.NOT_FOUND,
+        false,
+        'BLOG NOT FOUND !',
+        null,
+      );
+    }
+
+    // check user is authorized to update this blog
+    if (isBlogExsits?.author.toString() !== refaranceId) {
+      responseHandelar(
+        res,
+        StatusCodes.FORBIDDEN,
+        false,
+        'You are not authorized to update this blog!',
+        null,
+      );
+    }
+
+    const updateData = req.body;
     // Update blog in the database
     const updatedBlog = await blogServices.updateBlogFromDB(updateData, id);
 

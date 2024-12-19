@@ -15,8 +15,7 @@ const blogSchema = new mongoose_1.Schema({
     },
     author: {
         type: mongoose_1.Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
+        ref: 'User',
     },
     isPublished: {
         type: Boolean,
@@ -24,4 +23,4 @@ const blogSchema = new mongoose_1.Schema({
     },
 }, { timestamps: true });
 // Export Blog model
-exports.Blog = (0, mongoose_1.model)("Blog", blogSchema);
+exports.Blog = (0, mongoose_1.model)('Blog', blogSchema);
