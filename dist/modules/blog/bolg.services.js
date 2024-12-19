@@ -39,9 +39,15 @@ const updateBlogFromDB = (payload, id) => __awaiter(void 0, void 0, void 0, func
     }));
     return result;
 });
+// delete blog
+const deleteBlogFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield blog_model_1.Blog.findByIdAndDelete(id);
+    return result;
+});
 // export all blog services
 exports.blogServices = {
     getBlogsFromDb,
     createBlogIntoDB,
     updateBlogFromDB,
+    deleteBlogFromDB,
 };

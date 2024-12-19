@@ -49,22 +49,22 @@ const createBlog = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 
     }
 }));
 // updateBlog
-const updateBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const updateBlog = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const updateData = req.body;
+    // Check if ID is provided
+    if (!id) {
+        (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.BAD_REQUEST, false, 'Blog ID is required!', null);
+    }
     try {
-        const { id } = req.params;
-        const updateData = req.body;
-        // Check if ID is provided
-        if (!id) {
-            (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.NOT_FOUND, false, 'Blog not found !', null);
-        }
         // Update blog in the database
         const updatedBlog = yield bolg_services_1.blogServices.updateBlogFromDB(updateData, id);
-        // Check if update was successful
+        // Check if update was not successful
         if (!updatedBlog) {
             (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.BAD_REQUEST, false, 'Blog update failed!', null);
         }
         // Success response
-        return (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.OK, true, 'Blog updated successfully', {
+        (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.OK, true, 'Blog updated successfully', {
             _id: updatedBlog === null || updatedBlog === void 0 ? void 0 : updatedBlog._id,
             title: updatedBlog === null || updatedBlog === void 0 ? void 0 : updatedBlog.title,
             content: updatedBlog === null || updatedBlog === void 0 ? void 0 : updatedBlog.content,
@@ -74,10 +74,32 @@ const updateBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     catch (error) {
         next(error); // Pass error to global error handler
     }
-});
+}));
+// deleteBlog
+const deleteBlog = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    if (!id) {
+        (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.BAD_REQUEST, false, 'Blog ID is required!', null);
+    }
+    try {
+        const isDeleted = yield bolg_services_1.blogServices.deleteBlogFromDB(id);
+        if (!isDeleted) {
+            (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.NOT_FOUND, false, 'Blog not found!', null);
+        }
+        res.status(http_status_codes_1.StatusCodes.OK).json({
+            success: true,
+            message: 'Blog deleted successfully',
+            statusCode: http_status_codes_1.StatusCodes.OK,
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+}));
 // export all blog controlers
 exports.blogControllers = {
     getBlogs,
     createBlog,
     updateBlog,
+    deleteBlog,
 };

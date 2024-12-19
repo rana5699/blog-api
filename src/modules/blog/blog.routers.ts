@@ -29,11 +29,6 @@ blogRoutes.patch(
 );
 
 // update blog
-// blogRoutes.patch(
-//   '/blogs/:id',
-//   auth(),
-//   validateRequest(blogUpdateValidationSchema),
-//   blogControllers.updateBlog,
-// );
+blogRoutes.delete('/blogs/:id', auth(), blogControllers.deleteBlog);
 
 export default blogRoutes;

@@ -27,8 +27,7 @@ const auth = () => {
             if (err) {
                 return next(new app_error_1.default(http_status_codes_1.StatusCodes.UNAUTHORIZED, 'You are UNAUTHORIZED', ''));
             }
-            console.log(decoded);
-            // req.user = decoded as JwtPayload;
+            req.user = decoded;
             next();
         });
     });

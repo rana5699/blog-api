@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import appError from '../errors/app.error';
 import { StatusCodes } from 'http-status-codes';
@@ -22,8 +22,7 @@ const auth = () => {
         );
       }
 
-      console.log(decoded);
-      // req.user = decoded as JwtPayload;
+      req.user = decoded as JwtPayload;
 
       next();
     });

@@ -16,10 +16,5 @@ blogRoutes.post('/blogs', (0, auth_1.default)(), (0, validateRequest_1.default)(
 // update blog
 blogRoutes.patch('/blogs/:id', (0, auth_1.default)(), (0, validateRequest_1.default)(blog_validation_1.blogUpdateValidationSchema), blog_controlers_1.blogControllers.updateBlog);
 // update blog
-// blogRoutes.patch(
-//   '/blogs/:id',
-//   auth(),
-//   validateRequest(blogUpdateValidationSchema),
-//   blogControllers.updateBlog,
-// );
+blogRoutes.delete('/blogs/:id', (0, auth_1.default)(), blog_controlers_1.blogControllers.deleteBlog);
 exports.default = blogRoutes;
