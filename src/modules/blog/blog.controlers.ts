@@ -1,7 +1,7 @@
-import { StatusCodes } from "http-status-codes";
-import cacthAsync from "../../utilities/catchAsync";
-import responseHandelar from "../../utilities/resposeHandelar";
-import { blogServices } from "./bolg.services";
+import { StatusCodes } from 'http-status-codes';
+import cacthAsync from '../../utilities/catchAsync';
+import responseHandelar from '../../utilities/resposeHandelar';
+import { blogServices } from './bolg.services';
 
 // Blogs
 const getBlogs = cacthAsync(async (req, res, next) => {
@@ -12,8 +12,8 @@ const getBlogs = cacthAsync(async (req, res, next) => {
       res,
       StatusCodes.OK,
       true,
-      "Blogs fetched successfully",
-      result
+      'Blogs fetched successfully',
+      result,
     );
   } catch (error) {
     next(error);
@@ -33,13 +33,13 @@ const createBlog = cacthAsync(async (req, res, next) => {
         res,
         StatusCodes.BAD_REQUEST,
         false,
-        "Blog creation faield",
-        null
+        'Blog creation faield',
+        null,
       );
     }
 
     // if is okay
-    responseHandelar(res, StatusCodes.OK, true, "Blog created successfully", {
+    responseHandelar(res, StatusCodes.OK, true, 'Blog created successfully', {
       _id: savedBlogData?._id,
       title: savedBlogData.title,
       content: savedBlogData?.content,

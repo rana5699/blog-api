@@ -12,15 +12,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const app_error_1 = __importDefault(require("../errors/app.error"));
 const http_status_codes_1 = require("http-status-codes");
+const config_1 = __importDefault(require("../config/config"));
 const auth = () => {
     return (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         const token = req.headers.authorization;
         if (!token) {
-            throw new app_error_1.default(http_status_codes_1.StatusCodes.UNAUTHORIZED, "You are not authorized", "");
+            return next(new app_error_1.default(http_status_codes_1.StatusCodes.UNAUTHORIZED, 'You are UNAUTHORIZED', ''));
         }
-        next();
+        // Verify token
+        jsonwebtoken_1.default.verify(token, `${config_1.default.jwt_access_token}`, (err, decoded) => {
+            if (err) {
+                return next(new app_error_1.default(http_status_codes_1.StatusCodes.UNAUTHORIZED, 'You are UNAUTHORIZED', ''));
+            }
+            console.log(decoded);
+            // req.user = decoded as JwtPayload;
+            next();
+        });
     });
 };
 exports.default = auth;

@@ -21,7 +21,7 @@ const bolg_services_1 = require("./bolg.services");
 const getBlogs = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const result = yield bolg_services_1.blogServices.getBlogsFromDb();
-        (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.OK, true, "Blogs fetched successfully", result);
+        (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.OK, true, 'Blogs fetched successfully', result);
     }
     catch (error) {
         next(error);
@@ -34,10 +34,10 @@ const createBlog = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 
         const savedBlogData = yield bolg_services_1.blogServices.createBlogIntoDB(blogData);
         // Check if blog  saved unsuccessfully
         if (!savedBlogData) {
-            (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.BAD_REQUEST, false, "Blog creation faield", null);
+            (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.BAD_REQUEST, false, 'Blog creation faield', null);
         }
         // if is okay
-        (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.OK, true, "Blog created successfully", {
+        (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.OK, true, 'Blog created successfully', {
             _id: savedBlogData === null || savedBlogData === void 0 ? void 0 : savedBlogData._id,
             title: savedBlogData.title,
             content: savedBlogData === null || savedBlogData === void 0 ? void 0 : savedBlogData.content,
