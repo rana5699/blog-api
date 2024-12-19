@@ -18,6 +18,7 @@ const catchAsync_1 = __importDefault(require("../../utilities/catchAsync"));
 const resposeHandelar_1 = __importDefault(require("../../utilities/resposeHandelar"));
 const bolg_services_1 = require("./bolg.services");
 const user_model_1 = require("../users/user.model");
+const blog_model_1 = require("./blog.model");
 // Blogs
 const getBlogs = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -80,10 +81,18 @@ const updateBlog = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 
         if (!isBlogExsits) {
             (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.NOT_FOUND, false, 'BLOG NOT FOUND !', null);
         }
-        // check user is authorized to update this blog
-        if ((isBlogExsits === null || isBlogExsits === void 0 ? void 0 : isBlogExsits.author.toString()) !== refaranceId) {
-            (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.FORBIDDEN, false, 'You are not authorized to update this blog!', null);
+        // check user is blocked
+        const user = yield user_model_1.User.findById(refaranceId);
+        // check user is exists
+        if (!user) {
+            (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.NOT_FOUND, false, 'Author not found', null);
         }
+        //check is user is blocked
+        if (user === null || user === void 0 ? void 0 : user.isBlocked) {
+            (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.NOT_FOUND, false, `${user === null || user === void 0 ? void 0 : user.name} is blocked ! can not update blog this moment. Please try after unbcked`, null);
+        }
+        // check user is authorized to update this blog (static method)
+        blog_model_1.Blog.authorizedUser(isBlogExsits, refaranceId, res);
         const updateData = req.body;
         // Update blog in the database
         const updatedBlog = yield bolg_services_1.blogServices.updateBlogFromDB(updateData, id);
@@ -105,15 +114,28 @@ const updateBlog = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 
 }));
 // deleteBlog
 const deleteBlog = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const { id } = req.params;
+    const refaranceId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
     if (!id) {
         (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.BAD_REQUEST, false, 'Blog ID is required!', null);
     }
     try {
+        // find user
+        const user = yield user_model_1.User.findById(refaranceId);
+        //check is user is blocked
+        if (user === null || user === void 0 ? void 0 : user.isBlocked) {
+            (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.NOT_FOUND, false, `${user === null || user === void 0 ? void 0 : user.name} is blocked ! can not delete any blog at this moment. Please try after unbcked`, null);
+        }
+        // find blog
+        const blog = yield bolg_services_1.blogServices.getBlogByIdFromDb(id);
+        // check user is author of this blog
+        blog_model_1.Blog.authorizedUser(blog, refaranceId, res);
         const isDeleted = yield bolg_services_1.blogServices.deleteBlogFromDB(id);
         if (!isDeleted) {
             (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.NOT_FOUND, false, 'Blog not found!', null);
         }
+        // check is authorized user
         res.status(http_status_codes_1.StatusCodes.OK).json({
             success: true,
             message: 'Blog deleted successfully',

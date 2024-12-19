@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const mongoose_1 = require("mongoose");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const config_1 = __importDefault(require("../../config/config"));
@@ -34,25 +35,37 @@ const userSchema = new mongoose_1.Schema({
     },
     role: {
         type: String,
-        enum: ["admin", "user"],
-        default: "user",
+        enum: ['admin', 'user'],
+        default: 'user',
     },
     isBlocked: {
         type: Boolean,
         default: false,
     },
 }, { timestamps: true });
+// // create static for check user is blocked
+// userSchema.static('isUserBlocked', function (res, user) {
+//   if (user?.isBlocked) {
+//     responseHandelar(
+//       res,
+//       StatusCodes.FORBIDDEN,
+//       false,
+//       'User is blocked !',
+//       null,
+//     );
+//   }
+// });
 // hashed password
-userSchema.pre("save", function () {
+userSchema.pre('save', function () {
     return __awaiter(this, void 0, void 0, function* () {
         this.password = bcrypt_1.default.hashSync(this.password, Number(config_1.default.salt_round));
     });
 });
 // empty password after save as response
-userSchema.post("save", function () {
+userSchema.post('save', function () {
     return __awaiter(this, void 0, void 0, function* () {
-        this.password = "";
+        this.password = '';
     });
 });
 // Export User model
-exports.User = (0, mongoose_1.model)("User", userSchema);
+exports.User = (0, mongoose_1.model)('User', userSchema);

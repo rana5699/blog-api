@@ -1,7 +1,8 @@
-import { model, Schema } from "mongoose";
-import { TUser } from "./user.interfaces";
-import bcrypt from "bcrypt";
-import config from "../../config/config";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { model, Schema } from 'mongoose';
+import { TUser } from './user.interfaces';
+import bcrypt from 'bcrypt';
+import config from '../../config/config';
 
 const userSchema = new Schema<TUser>(
   {
@@ -22,26 +23,39 @@ const userSchema = new Schema<TUser>(
     },
     role: {
       type: String,
-      enum: ["admin", "user"],
-      default: "user",
+      enum: ['admin', 'user'],
+      default: 'user',
     },
     isBlocked: {
       type: Boolean,
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
+// // create static for check user is blocked
+// userSchema.static('isUserBlocked', function (res, user) {
+//   if (user?.isBlocked) {
+//     responseHandelar(
+//       res,
+//       StatusCodes.FORBIDDEN,
+//       false,
+//       'User is blocked !',
+//       null,
+//     );
+//   }
+// });
+
 // hashed password
-userSchema.pre("save", async function () {
+userSchema.pre('save', async function () {
   this.password = bcrypt.hashSync(this.password, Number(config.salt_round));
 });
 
 // empty password after save as response
-userSchema.post("save", async function () {
-  this.password = "";
+userSchema.post('save', async function () {
+  this.password = '';
 });
 
 // Export User model
-export const User = model<TUser>("User", userSchema);
+export const User = model<TUser>('User', userSchema);

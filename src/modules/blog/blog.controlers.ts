@@ -3,6 +3,7 @@ import cacthAsync from '../../utilities/catchAsync';
 import responseHandelar from '../../utilities/resposeHandelar';
 import { blogServices } from './bolg.services';
 import { User } from '../users/user.model';
+import { Blog } from './blog.model';
 
 // Blogs
 const getBlogs = cacthAsync(async (req, res, next) => {
@@ -122,16 +123,34 @@ const updateBlog = cacthAsync(async (req, res, next) => {
       );
     }
 
-    // check user is authorized to update this blog
-    if (isBlogExsits?.author.toString() !== refaranceId) {
+    // check user is blocked
+
+    const user = await User.findById(refaranceId);
+
+    // check user is exists
+    if (!user) {
       responseHandelar(
         res,
-        StatusCodes.FORBIDDEN,
+        StatusCodes.NOT_FOUND,
         false,
-        'You are not authorized to update this blog!',
+        'Author not found',
         null,
       );
     }
+
+    //check is user is blocked
+    if (user?.isBlocked) {
+      responseHandelar(
+        res,
+        StatusCodes.NOT_FOUND,
+        false,
+        `${user?.name} is blocked ! can not update blog this moment. Please try after unbcked`,
+        null,
+      );
+    }
+
+    // check user is authorized to update this blog (static method)
+    Blog.authorizedUser(isBlogExsits, refaranceId, res);
 
     const updateData = req.body;
     // Update blog in the database
@@ -163,6 +182,7 @@ const updateBlog = cacthAsync(async (req, res, next) => {
 // deleteBlog
 const deleteBlog = cacthAsync(async (req, res, next) => {
   const { id } = req.params;
+  const refaranceId = req.user?.userId;
 
   if (!id) {
     responseHandelar(
@@ -175,6 +195,26 @@ const deleteBlog = cacthAsync(async (req, res, next) => {
   }
 
   try {
+    // find user
+    const user = await User.findById(refaranceId);
+
+    //check is user is blocked
+    if (user?.isBlocked) {
+      responseHandelar(
+        res,
+        StatusCodes.NOT_FOUND,
+        false,
+        `${user?.name} is blocked ! can not delete any blog at this moment. Please try after unbcked`,
+        null,
+      );
+    }
+
+    // find blog
+    const blog = await blogServices.getBlogByIdFromDb(id);
+
+    // check user is author of this blog
+    Blog.authorizedUser(blog, refaranceId, res);
+
     const isDeleted = await blogServices.deleteBlogFromDB(id);
 
     if (!isDeleted) {
@@ -186,6 +226,8 @@ const deleteBlog = cacthAsync(async (req, res, next) => {
         null,
       );
     }
+
+    // check is authorized user
 
     res.status(StatusCodes.OK).json({
       success: true,

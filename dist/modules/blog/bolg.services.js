@@ -13,9 +13,9 @@ exports.blogServices = void 0;
 const blog_model_1 = require("./blog.model");
 // getAllBlog from Db
 const getBlogsFromDb = () => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield blog_model_1.Blog.find().populate({
+    const result = yield blog_model_1.Blog.find().select('-_id title content').populate({
         path: 'author',
-        select: 'name email',
+        select: '-_id name',
     });
     return result;
 });

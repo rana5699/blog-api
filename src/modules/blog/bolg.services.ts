@@ -4,9 +4,9 @@ import { TBlog } from './bolg.interface';
 
 // getAllBlog from Db
 const getBlogsFromDb = async () => {
-  const result = await Blog.find().populate({
+  const result = await Blog.find().select('-_id title content').populate({
     path: 'author',
-    select: 'name email',
+    select: '-_id name',
   });
 
   return result;
@@ -48,7 +48,6 @@ const updateBlogFromDB = async (payload: Partial<TBlog>, id: string) => {
 // delete blog
 const deleteBlogFromDB = async (id: string) => {
   const result = await Blog.findByIdAndDelete(id);
-
   return result;
 };
 
