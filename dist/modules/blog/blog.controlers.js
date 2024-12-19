@@ -22,7 +22,7 @@ const blog_model_1 = require("./blog.model");
 // Blogs
 const getBlogs = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = yield bolg_services_1.blogServices.getBlogsFromDb();
+        const result = yield bolg_services_1.blogServices.getBlogsFromDb(req.query);
         (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.OK, true, 'Blogs fetched successfully', result);
     }
     catch (error) {

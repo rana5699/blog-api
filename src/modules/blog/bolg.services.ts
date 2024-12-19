@@ -1,15 +1,28 @@
 import { Types } from 'mongoose';
 import { Blog } from './blog.model';
 import { TBlog } from './bolg.interface';
+import QuaryBuilder from '../../builder/query.builder';
 
 // getAllBlog from Db
-const getBlogsFromDb = async () => {
-  const result = await Blog.find()
+const getBlogsFromDb = async (query: Record<string, unknown>) => {
+  const blogQuery = new QuaryBuilder(Blog.find(), query)
+    .searchMethod(['title', 'content'])
+    .filterMethod()
+    .sortMethod();
+
+  const result = await blogQuery.modelQuery
     .select('-isPublished -createdAt -updatedAt -__v')
     .populate({
       path: 'author',
       select: '-password -__v',
     });
+
+  // const result = await Blog.find()
+  //   .select('-isPublished -createdAt -updatedAt -__v')
+  //   .populate({
+  //     path: 'author',
+  //     select: '-password -__v',
+  //   });
 
   return result;
 };

@@ -4,11 +4,10 @@ import responseHandelar from '../../utilities/resposeHandelar';
 import { blogServices } from './bolg.services';
 import { User } from '../users/user.model';
 import { Blog } from './blog.model';
-
 // Blogs
 const getBlogs = cacthAsync(async (req, res, next) => {
   try {
-    const result = await blogServices.getBlogsFromDb();
+    const result = await blogServices.getBlogsFromDb(req.query);
 
     responseHandelar(
       res,

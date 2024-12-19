@@ -8,17 +8,31 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogServices = void 0;
 const blog_model_1 = require("./blog.model");
+const query_builder_1 = __importDefault(require("../../builder/query.builder"));
 // getAllBlog from Db
-const getBlogsFromDb = () => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield blog_model_1.Blog.find()
+const getBlogsFromDb = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    const blogQuery = new query_builder_1.default(blog_model_1.Blog.find(), query)
+        .searchMethod(['title', 'content'])
+        .filterMethod()
+        .sortMethod();
+    const result = yield blogQuery.modelQuery
         .select('-isPublished -createdAt -updatedAt -__v')
         .populate({
         path: 'author',
         select: '-password -__v',
     });
+    // const result = await Blog.find()
+    //   .select('-isPublished -createdAt -updatedAt -__v')
+    //   .populate({
+    //     path: 'author',
+    //     select: '-password -__v',
+    //   });
     return result;
 });
 // createBlogIntoDB
