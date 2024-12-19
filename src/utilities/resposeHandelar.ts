@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Response } from 'express';
 
 // Define responseHandelar for global respose
 const responseHandelar = <T>(
@@ -6,11 +6,12 @@ const responseHandelar = <T>(
   statusCode: number,
   success: boolean,
   message: string,
-  data: T | null
+  data: T | null,
 ) => {
   res.status(statusCode).json({
     success,
     message,
+    statusCode,
     data,
   });
 };

@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import cacthAsync from '../../utilities/catchAsync';
 import responseHandelar from '../../utilities/resposeHandelar';
 import { blogServices } from './bolg.services';
+import { NextFunction, Request, Response } from 'express';
 
 // Blogs
 const getBlogs = cacthAsync(async (req, res, next) => {
@@ -50,8 +51,58 @@ const createBlog = cacthAsync(async (req, res, next) => {
   }
 });
 
+// updateBlog
+const updateBlog = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    // Check if ID is provided
+    if (!id) {
+      responseHandelar(
+        res,
+        StatusCodes.NOT_FOUND,
+        false,
+        'Blog not found !',
+        null,
+      );
+    }
+
+    // Update blog in the database
+    const updatedBlog = await blogServices.updateBlogFromDB(updateData, id);
+
+    // Check if update was successful
+    if (!updatedBlog) {
+      responseHandelar(
+        res,
+        StatusCodes.BAD_REQUEST,
+        false,
+        'Blog update failed!',
+        null,
+      );
+    }
+
+    // Success response
+    return responseHandelar(
+      res,
+      StatusCodes.OK,
+      true,
+      'Blog updated successfully',
+      {
+        _id: updatedBlog?._id,
+        title: updatedBlog?.title,
+        content: updatedBlog?.content,
+        author: updatedBlog?.author,
+      },
+    );
+  } catch (error) {
+    next(error); // Pass error to global error handler
+  }
+};
+
 // export all blog controlers
 export const blogControllers = {
   getBlogs,
   createBlog,
+  updateBlog,
 };

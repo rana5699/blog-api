@@ -48,8 +48,36 @@ const createBlog = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 
         next(error);
     }
 }));
+// updateBlog
+const updateBlog = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const updateData = req.body;
+        // Check if ID is provided
+        if (!id) {
+            (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.NOT_FOUND, false, 'Blog not found !', null);
+        }
+        // Update blog in the database
+        const updatedBlog = yield bolg_services_1.blogServices.updateBlogFromDB(updateData, id);
+        // Check if update was successful
+        if (!updatedBlog) {
+            (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.BAD_REQUEST, false, 'Blog update failed!', null);
+        }
+        // Success response
+        return (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.OK, true, 'Blog updated successfully', {
+            _id: updatedBlog === null || updatedBlog === void 0 ? void 0 : updatedBlog._id,
+            title: updatedBlog === null || updatedBlog === void 0 ? void 0 : updatedBlog.title,
+            content: updatedBlog === null || updatedBlog === void 0 ? void 0 : updatedBlog.content,
+            author: updatedBlog === null || updatedBlog === void 0 ? void 0 : updatedBlog.author,
+        });
+    }
+    catch (error) {
+        next(error); // Pass error to global error handler
+    }
+});
 // export all blog controlers
 exports.blogControllers = {
     getBlogs,
     createBlog,
+    updateBlog,
 };

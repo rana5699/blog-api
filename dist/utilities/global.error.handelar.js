@@ -8,24 +8,29 @@ const zod_1 = require("zod");
 const handleErrors_1 = require("../errors/handleErrors");
 const globalErrorHandelar = (err, req, res, next) => {
     let statusCode = err.statusCode || 500;
-    let message = err.message || "Something went wrong !";
+    let message = err.message || 'Something went wrong !';
     // check  error from where
     if (err instanceof zod_1.ZodError) {
         const zodError = (0, handleErrors_1.handleZodValidationError)(err);
         statusCode = zodError.statusCode;
         message = zodError.message;
     }
-    else if ((err === null || err === void 0 ? void 0 : err.name) === "ValidatorError") {
+    else if ((err === null || err === void 0 ? void 0 : err.name) === 'ValidatorError') {
         const mongooseValidationError = (0, handleErrors_1.handleMongooseValidationError)(err);
         statusCode = mongooseValidationError.statusCode;
         message = mongooseValidationError.message;
+    }
+    else if (err.name === 'CastError') {
+        const castError = (0, handleErrors_1.handleMongooseCastError)(err);
+        statusCode = castError.statusCode;
+        message = castError.message;
     }
     res.status(statusCode).json({
         success: false,
         message: message,
         statusCode,
-        error: err.issues || {},
-        stack: config_1.default.node_dev === "production" ? null : err.stack,
+        error: err || {},
+        stack: config_1.default.node_dev === 'production' ? null : err.stack,
     });
     next();
 };

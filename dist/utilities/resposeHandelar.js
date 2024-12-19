@@ -5,6 +5,7 @@ const responseHandelar = (res, statusCode, success, message, data) => {
     res.status(statusCode).json({
         success,
         message,
+        statusCode,
         data,
     });
 };

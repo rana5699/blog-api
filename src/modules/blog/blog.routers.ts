@@ -1,17 +1,39 @@
-import { Router } from "express";
-import { blogControllers } from "./blog.controlers";
-import validateRequest from "../../utilities/validateRequest";
-import { blogValidationSchema } from "./blog.validation";
-import auth from "../../utilities/auth";
+import { Router } from 'express';
+import { blogControllers } from './blog.controlers';
+import validateRequest from '../../utilities/validateRequest';
+import {
+  blogUpdateValidationSchema,
+  blogValidationSchema,
+} from './blog.validation';
+import auth from '../../utilities/auth';
 
 const blogRoutes = Router();
 
+// get all blogs
+blogRoutes.get('/blogs', blogControllers.getBlogs);
+
+// post blog
 blogRoutes.post(
-  "/blogs",
+  '/blogs',
   auth(),
   validateRequest(blogValidationSchema),
-  blogControllers.createBlog
+  blogControllers.createBlog,
 );
-blogRoutes.get("/blogs", blogControllers.getBlogs);
+
+// update blog
+blogRoutes.patch(
+  '/blogs/:id',
+  auth(),
+  validateRequest(blogUpdateValidationSchema),
+  blogControllers.updateBlog,
+);
+
+// update blog
+// blogRoutes.patch(
+//   '/blogs/:id',
+//   auth(),
+//   validateRequest(blogUpdateValidationSchema),
+//   blogControllers.updateBlog,
+// );
 
 export default blogRoutes;
