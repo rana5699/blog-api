@@ -57,7 +57,7 @@ const updateBlogFromDB = (payload, id) => __awaiter(void 0, void 0, void 0, func
     });
     yield (result === null || result === void 0 ? void 0 : result.populate({
         path: 'author',
-        select: 'name email',
+        select: '-__v -password',
     }));
     return result;
 });
