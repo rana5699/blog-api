@@ -16,7 +16,13 @@ const createUserIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function
     const result = yield user_model_1.User.create(payload);
     return result;
 });
+// get sigle user for check
+// const getUserByEmail = async (email: string) => {
+//   const result = await User.findOne({ email });
+//   return result;
+// };
 // export all methods
 exports.userServices = {
     createUserIntoDB,
+    // getUserByEmail,
 };

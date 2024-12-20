@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { model, Schema } from 'mongoose';
 import { TUser } from './user.interfaces';
 import bcrypt from 'bcrypt';
@@ -45,6 +44,15 @@ const userSchema = new Schema<TUser>(
 //       null,
 //     );
 //   }
+// });
+
+// // check user is exist
+// userSchema.static('userExists', async function (id) {
+//   const user = await this.findById(id);
+//   if (!user) {
+//     throw new Error('User not found!');
+//   }
+//   return user;
 // });
 
 // hashed password

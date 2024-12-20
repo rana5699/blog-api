@@ -2,15 +2,29 @@ import { StatusCodes } from 'http-status-codes';
 import cacthAsync from '../../utilities/catchAsync';
 import responseHandelar from '../../utilities/resposeHandelar';
 import { adminServices } from './admin.services';
+import { User } from '../users/user.model';
 
 // userBlock
 const userBlock = cacthAsync(async (req, res, next) => {
   const { userId } = req.params;
-  const role = req.user?.role;
+  const refanceData = req?.user;
   try {
+    const isAdminExists = await User.findById(refanceData?.userId);
+
     // check is admin
-    if (role !== 'admin') {
-      responseHandelar(
+    if (!isAdminExists) {
+      return responseHandelar(
+        res,
+        StatusCodes.NOT_FOUND,
+        false,
+        'Admin not found in the database!',
+        null,
+      );
+    }
+
+    // check is admin
+    if (refanceData?.role !== 'admin') {
+      return responseHandelar(
         res,
         StatusCodes.BAD_REQUEST,
         false,
@@ -19,11 +33,24 @@ const userBlock = cacthAsync(async (req, res, next) => {
       );
     }
 
+    // check admin role === user role
+    const user = await User.findById(userId);
+
+    if (user?.role === refanceData?.role) {
+      return responseHandelar(
+        res,
+        StatusCodes.BAD_REQUEST,
+        false,
+        `${user?.name} is ${user?.role} can not block !`,
+        null,
+      );
+    }
+
     const result = await adminServices.blockUserFromDB(userId);
 
     // check user is exist
     if (!result) {
-      responseHandelar(
+      return responseHandelar(
         res,
         StatusCodes.NOT_FOUND,
         false,
@@ -45,7 +72,7 @@ const userBlock = cacthAsync(async (req, res, next) => {
 // delete blog
 const deleteBlog = cacthAsync(async (req, res, next) => {
   const { id } = req.params;
-  const role = req.user?.role;
+  const refanceData = req?.user;
 
   if (!id) {
     responseHandelar(
@@ -57,8 +84,21 @@ const deleteBlog = cacthAsync(async (req, res, next) => {
     );
   }
   try {
+    const isAdminExists = await User.findById(refanceData?.userId);
+
     // check is admin
-    if (role !== 'admin') {
+    if (!isAdminExists) {
+      return responseHandelar(
+        res,
+        StatusCodes.NOT_FOUND,
+        false,
+        'Admin not found in the database!',
+        null,
+      );
+    }
+
+    // check is admin
+    if (refanceData?.role !== 'admin') {
       responseHandelar(
         res,
         StatusCodes.BAD_REQUEST,

@@ -41,7 +41,7 @@ const createBlogIntoDB = (payload, id) => __awaiter(void 0, void 0, void 0, func
     const result = yield blog_model_1.Blog.create(payload);
     yield result.populate({
         path: 'author',
-        select: ' -password',
+        select: ' -password -__v',
     });
     return result;
 });

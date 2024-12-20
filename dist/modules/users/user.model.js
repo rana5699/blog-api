@@ -13,7 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
-/* eslint-disable @typescript-eslint/no-explicit-any */
 const mongoose_1 = require("mongoose");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const config_1 = __importDefault(require("../../config/config"));
@@ -54,6 +53,14 @@ const userSchema = new mongoose_1.Schema({
 //       null,
 //     );
 //   }
+// });
+// // check user is exist
+// userSchema.static('userExists', async function (id) {
+//   const user = await this.findById(id);
+//   if (!user) {
+//     throw new Error('User not found!');
+//   }
+//   return user;
 // });
 // hashed password
 userSchema.pre('save', function () {

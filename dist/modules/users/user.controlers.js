@@ -18,6 +18,7 @@ const http_status_codes_1 = require("http-status-codes");
 const resposeHandelar_1 = __importDefault(require("../../utilities/resposeHandelar"));
 const user_services_1 = require("./user.services");
 const catchAsync_1 = __importDefault(require("../../utilities/catchAsync"));
+const user_model_1 = require("./user.model");
 // createUser
 const createUser = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -25,8 +26,13 @@ const createUser = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 
         if (!userData) {
             res.send('must provided user data');
         }
+        // check is user already exists
+        const isExists = yield user_model_1.User.findOne({ email: userData.email });
+        if (isExists) {
+            return (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.CONFLICT, false, 'User email already exixts !', null);
+        }
         const saveduserData = yield user_services_1.userServices.createUserIntoDB(userData);
-        (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.CREATED, true, 'User registered successfully', {
+        return (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.CREATED, true, 'User registered successfully', {
             _id: saveduserData === null || saveduserData === void 0 ? void 0 : saveduserData._id,
             name: saveduserData === null || saveduserData === void 0 ? void 0 : saveduserData.name,
             email: saveduserData === null || saveduserData === void 0 ? void 0 : saveduserData.email,
