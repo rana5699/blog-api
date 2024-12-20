@@ -54,7 +54,7 @@ const updateBlogFromDB = async (payload: Partial<TBlog>, id: string) => {
 
   await result?.populate({
     path: 'author',
-    select: 'name email',
+    select: '-__v -password',
   });
 
   return result;

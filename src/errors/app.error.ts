@@ -1,16 +1,36 @@
-class appError extends Error {
-  public StatusCode: number;
+/* eslint-disable @typescript-eslint/no-explicit-any */
+class AppError extends Error {
+  public statusCode: number;
+  public errorDetails?: any;
 
-  constructor(StatusCode: number, message: string, stack: "") {
+  constructor(
+    statusCode: number,
+    message: string,
+    errorDetails?: any,
+    stack?: string,
+  ) {
     super(message);
-    this.StatusCode = StatusCode;
+    this.statusCode = statusCode;
+    this.errorDetails = errorDetails;
 
+    // Use the provided stack or capture it from the error's instantiation point
     if (stack) {
       this.stack = stack;
     } else {
       Error.captureStackTrace(this, this.constructor);
     }
   }
+
+  // Generate a structured error response
+  toResponse() {
+    return {
+      success: false,
+      message: this.message,
+      statusCode: this.statusCode,
+      error: this.errorDetails || null,
+      stack: this.stack || null,
+    };
+  }
 }
 
-export default appError;
+export default AppError;
