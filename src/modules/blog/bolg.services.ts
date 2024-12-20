@@ -34,7 +34,7 @@ const createBlogIntoDB = async (payload: TBlog, id: Types.ObjectId) => {
 
   await result.populate({
     path: 'author',
-    select: ' -password',
+    select: ' -password -__v',
   });
 
   return result;

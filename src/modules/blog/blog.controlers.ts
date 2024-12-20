@@ -27,7 +27,7 @@ const createBlog = cacthAsync(async (req, res, next) => {
   try {
     // user is logged in
     if (!referanceId) {
-      responseHandelar(
+      return responseHandelar(
         res,
         StatusCodes.UNAUTHORIZED,
         false,
@@ -41,7 +41,7 @@ const createBlog = cacthAsync(async (req, res, next) => {
 
     // check user exists
     if (!loginUser) {
-      responseHandelar(
+      return responseHandelar(
         res,
         StatusCodes.NOT_FOUND,
         false,
@@ -51,7 +51,7 @@ const createBlog = cacthAsync(async (req, res, next) => {
     }
 
     if (loginUser?.isBlocked) {
-      responseHandelar(
+      return responseHandelar(
         res,
         StatusCodes.FORBIDDEN,
         false,
@@ -71,7 +71,7 @@ const createBlog = cacthAsync(async (req, res, next) => {
 
     // Check if blog  saved unsuccessfully
     if (!savedBlogData) {
-      responseHandelar(
+      return responseHandelar(
         res,
         StatusCodes.BAD_REQUEST,
         false,
@@ -119,7 +119,7 @@ const updateBlog = cacthAsync(async (req, res, next) => {
     const isBlogExsits = await blogServices.getBlogByIdFromDb(id);
 
     if (!isBlogExsits) {
-      responseHandelar(
+      return responseHandelar(
         res,
         StatusCodes.NOT_FOUND,
         false,
@@ -134,7 +134,7 @@ const updateBlog = cacthAsync(async (req, res, next) => {
 
     // check user is exists
     if (!user) {
-      responseHandelar(
+      return responseHandelar(
         res,
         StatusCodes.NOT_FOUND,
         false,
@@ -145,7 +145,7 @@ const updateBlog = cacthAsync(async (req, res, next) => {
 
     //check is user is blocked
     if (user?.isBlocked) {
-      responseHandelar(
+      return responseHandelar(
         res,
         StatusCodes.NOT_FOUND,
         false,
@@ -163,7 +163,7 @@ const updateBlog = cacthAsync(async (req, res, next) => {
 
     // Check if update was not successful
     if (!updatedBlog) {
-      responseHandelar(
+      return responseHandelar(
         res,
         StatusCodes.BAD_REQUEST,
         false,
@@ -190,7 +190,7 @@ const deleteBlog = cacthAsync(async (req, res, next) => {
   const refaranceId = req.user?.userId;
 
   if (!id) {
-    responseHandelar(
+    return responseHandelar(
       res,
       StatusCodes.BAD_REQUEST,
       false,
@@ -199,30 +199,40 @@ const deleteBlog = cacthAsync(async (req, res, next) => {
     );
   }
 
+  if (!refaranceId) {
+    return responseHandelar(
+      res,
+      StatusCodes.UNAUTHORIZED,
+      false,
+      'User is not authorized to delete this blog!',
+      null,
+    );
+  }
+
   try {
+    // find blog
+    const blog = await blogServices.getBlogByIdFromDb(id);
+
+    if (!blog) {
+      return responseHandelar(
+        res,
+        StatusCodes.NOT_FOUND,
+        false,
+        'Blog not found!',
+        null,
+      );
+    }
+
     // find user
     const user = await User.findById(refaranceId);
 
     //check is user is blocked
     if (user?.isBlocked) {
-      responseHandelar(
+      return responseHandelar(
         res,
         StatusCodes.NOT_FOUND,
         false,
         `${user?.name} is blocked ! can not delete any blog at this moment. Please try after unbcked`,
-        null,
-      );
-    }
-
-    // find blog
-    const blog = await blogServices.getBlogByIdFromDb(id);
-
-    if (!blog) {
-      responseHandelar(
-        res,
-        StatusCodes.NOT_FOUND,
-        false,
-        'Blog not found!',
         null,
       );
     }

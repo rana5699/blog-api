@@ -34,6 +34,12 @@ class QuaryBuilder<T> {
 
     excludesFields.forEach((field) => delete queryObj[field]);
 
+    // Map specific filters
+    if (queryObj.filter) {
+      queryObj.author = queryObj.filter;
+      delete queryObj.filter;
+    }
+
     this.modelQuery = this.modelQuery.find(queryObj);
 
     return this;
