@@ -18,10 +18,10 @@ const config_1 = __importDefault(require("./config"));
 const connectDb = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield mongoose_1.default.connect(`${config_1.default.dataBase}`);
-        console.log("DB Connected Successfully");
+        console.log('DB Connected Successfully');
     }
     catch (error) {
-        console.error("Database connection failed:", error);
+        console.error('Database connection failed:', error);
     }
 });
 exports.connectDb = connectDb;
