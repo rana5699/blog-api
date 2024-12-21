@@ -22,7 +22,7 @@ const userSchema = new Schema<TUser>(
     },
     role: {
       type: String,
-      enum: ['admin', 'user'],
+      enum: ['user'],
       default: 'user',
     },
     isBlocked: {

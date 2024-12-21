@@ -16,7 +16,7 @@ blogRoutes.get('/blogs', blogControllers.getBlogs);
 // post blog
 blogRoutes.post(
   '/blogs',
-  auth(user_role.admin, user_role.user),
+  auth(user_role.user),
   validateRequest(blogValidationSchema),
   blogControllers.createBlog,
 );

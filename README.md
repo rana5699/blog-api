@@ -116,7 +116,7 @@ To run this project, you will need to add the following environment variables to
 ## Example Request URL:
 
 ```http
-/api/blogs?search=dhaka&sortBy=createdAt&sortOrder=desc&filter=6765280d9b9e64e833de2eb3
+/api/blogs?search=bangladesh&sortBy=createdAt&sortOrder=desc&filter=6766afcb72ced35f6a0f2264
 
 ```
 

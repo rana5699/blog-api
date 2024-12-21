@@ -2,6 +2,6 @@ export type TUser = {
   name: string;
   email: string;
   password: string;
-  role: "admin" | "user";
+  role: 'user';
   isBlocked: boolean;
 };

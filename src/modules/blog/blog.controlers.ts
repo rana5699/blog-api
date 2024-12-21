@@ -23,10 +23,11 @@ const getBlogs = cacthAsync(async (req, res, next) => {
 
 // createBlog
 const createBlog = cacthAsync(async (req, res, next) => {
-  const referanceId = req.user?.userId;
+  // const referanceId = req.user?.userId;
+  const referanceData = req?.user;
   try {
     // user is logged in
-    if (!referanceId) {
+    if (!referanceData?.userId) {
       return responseHandelar(
         res,
         StatusCodes.UNAUTHORIZED,
@@ -37,7 +38,7 @@ const createBlog = cacthAsync(async (req, res, next) => {
     }
 
     // Check if the user is blocked
-    const loginUser = await User.findById(referanceId);
+    const loginUser = await User.findById(referanceData?.userId);
 
     // check user exists
     if (!loginUser) {
@@ -50,6 +51,18 @@ const createBlog = cacthAsync(async (req, res, next) => {
       );
     }
 
+    // check if user is admin then can not create any blogs
+    if (referanceData?.role === 'admin') {
+      return responseHandelar(
+        res,
+        StatusCodes.FORBIDDEN,
+        false,
+        'Admin can not create any blogs !',
+        null,
+      );
+    }
+
+    //check  if user is blocked
     if (loginUser?.isBlocked) {
       return responseHandelar(
         res,
@@ -64,7 +77,7 @@ const createBlog = cacthAsync(async (req, res, next) => {
 
     const savedBlogData = await blogServices.createBlogIntoDB(
       blogData,
-      referanceId,
+      referanceData?.userId,
     );
 
     // check use is blocek

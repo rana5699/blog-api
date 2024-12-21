@@ -31,24 +31,29 @@ const getBlogs = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0,
 }));
 // createBlog
 const createBlog = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    const referanceId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+    // const referanceId = req.user?.userId;
+    const referanceData = req === null || req === void 0 ? void 0 : req.user;
     try {
         // user is logged in
-        if (!referanceId) {
+        if (!(referanceData === null || referanceData === void 0 ? void 0 : referanceData.userId)) {
             return (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.UNAUTHORIZED, false, 'User is not authenticated!', null);
         }
         // Check if the user is blocked
-        const loginUser = yield user_model_1.User.findById(referanceId);
+        const loginUser = yield user_model_1.User.findById(referanceData === null || referanceData === void 0 ? void 0 : referanceData.userId);
         // check user exists
         if (!loginUser) {
             return (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.NOT_FOUND, false, 'Author not found !', null);
         }
+        // check if user is admin then can not create any blogs
+        if ((referanceData === null || referanceData === void 0 ? void 0 : referanceData.role) === 'admin') {
+            return (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.FORBIDDEN, false, 'Admin can not create any blogs !', null);
+        }
+        //check  if user is blocked
         if (loginUser === null || loginUser === void 0 ? void 0 : loginUser.isBlocked) {
             return (0, resposeHandelar_1.default)(res, http_status_codes_1.StatusCodes.FORBIDDEN, false, 'User is blocked and cannot create blogs!', null);
         }
         const blogData = req.body;
-        const savedBlogData = yield bolg_services_1.blogServices.createBlogIntoDB(blogData, referanceId);
+        const savedBlogData = yield bolg_services_1.blogServices.createBlogIntoDB(blogData, referanceData === null || referanceData === void 0 ? void 0 : referanceData.userId);
         // check use is blocek
         // Check if blog  saved unsuccessfully
         if (!savedBlogData) {
